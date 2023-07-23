@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>e-commerce_shopping</title>
+    </head>
+        <script>
+            $(function(){
+                var db = window.openDatabase("Databass", "1.0", "Cordova", 2*1024*1024);
+
+                //建立資料庫
+                db.transaction(createDB, errorDB);
+                $("#insert").click(function() {
+                    var db = window.openDatabase("Database", "1.0", "Cordova", 200000);
+                    db.transaction(insertDB, errorDB, successDB);
+                });
+                $("#query").click(function() {
+                    var db = window.openDatabase("Database", "1.0", "Cordova", 200000);
+                    db.transaction(queryDB, errorDB);
+                });
+            });
+
+            // 建立資料表
+            function createDB(tx) {
+                tx.executeSql("DROP TABLE IF EXISTS Product");
+                tx.executeSql("CREATE TABLE IF NOT EXISTS Product(ProductNumber INTEGER unique Primary Key, productName varchar(10), price varchar(10), inventory varchar(10))");
+            }
+
+            // 插入紀錄
+            function insertDB(tx) {
+                var setProductNumber = $("#ProductNumber");
+                var setproductName = $("#productName");
+                var setprice = $("#price");
+                var setinventory = $("#inventory");
+                tx.executeSql("INSERT INTO Product (ProductNumber, productName, price, inventory)")
+            }
+
+            function successDB(tx) {
+                alert("新增一筆紀錄!");
+            }
+
+            // 查詢資料庫
+            function queryDB(tx) {
+                tx.executeSql('SELECT * FROM Product', [], querySuccess, errorDB);
+            }
+
+            // 查詢成功的回撥函數
+            function querySuccess(tx, results) {
+                var len = results.rows.length;
+                $("#recordList").empty();
+                for (var i = 0; i < len; i++){
+                    var str = "<li>" + results.rows.item(i).ProductNumber;
+                    str += " - " + results.rows.item(i).productName;
+                    str += " - " + results.rows.item(i).price;
+                    str += " - " + results.rows.item(i).inventory;
+                    str += "</li>";
+                    $("#recorList").listview("refresh");
+                }
+            }
+
+            // 查詢錯誤的回撥函數
+            function errorDB(err) {
+                alert("錯誤!執行SQL錯誤: " + err.code);
+            }
+        </script>
+
+</html>
+     
